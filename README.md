@@ -1,13 +1,13 @@
 # Phisio
 
 Sensor de postura e de ângulo das articulações usando só uma webcam (ou duas).
-Trabalho TP01 de **SSC0715 Sensores Inteligentes** (ICMC/USP, 2026), feito por Davi Araújo.
+Trabalho 1 de **Sensores Inteligentes**.
 
 ![Phisio medindo a flexão do cotovelo](docs/gif/demo_angulos.gif)
 
-## Por que eu fiz isso
+## Ideia
 
-A ideia veio da minha própria fisioterapia. A clínica onde eu faço usa um software que custou uns
+A ideia veio da minha própria fisioterapia. A clínica onde eu faço usava um software que custou uns
 **US$ 10 mil** de licença vitalícia, e ele funciona com sensores com fio (provavelmente IMUs) colados
 nas articulações do paciente. Funciona bem, mas é caro e demora pra montar.
 
