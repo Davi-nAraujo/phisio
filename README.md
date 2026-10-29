@@ -160,7 +160,7 @@ uma medição de verdade está em `eval/angle_eval.py` (e `eval/capture_angles.p
 
 ### Testes
 
-`uv run python -m pytest -q` roda 9 testes com esqueletos sintéticos: geometria, níveis de postura e
+`uv run python -m pytest -q` roda 10 testes com esqueletos sintéticos: geometria, troca de lados com a imagem espelhada, níveis de postura e
 debounce, vista frontal sem quadril, contador de repetições, ADM ignorando falha de um quadro,
 queda × deitar e a fusão de duas câmeras.
 

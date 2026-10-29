@@ -7,6 +7,11 @@ NOSE, L_EYE, R_EYE, L_EAR, R_EAR = 0, 1, 2, 3, 4
 L_SHOULDER, R_SHOULDER, L_ELBOW, R_ELBOW, L_WRIST, R_WRIST = 5, 6, 7, 8, 9, 10
 L_HIP, R_HIP, L_KNEE, R_KNEE, L_ANKLE, R_ANKLE = 11, 12, 13, 14, 15, 16
 
+# index permutation that swaps every left/right keypoint pair. Used when the image is mirrored for
+# display: the model then sees a mirror image of the person and labels the right arm as the left one.
+FLIP_LR = [NOSE, R_EYE, L_EYE, R_EAR, L_EAR, R_SHOULDER, L_SHOULDER, R_ELBOW, L_ELBOW, R_WRIST, L_WRIST,
+           R_HIP, L_HIP, R_KNEE, L_KNEE, R_ANKLE, L_ANKLE]
+
 SKELETON = [
     (L_SHOULDER, R_SHOULDER), (L_SHOULDER, L_ELBOW), (L_ELBOW, L_WRIST),
     (R_SHOULDER, R_ELBOW), (R_ELBOW, R_WRIST), (L_SHOULDER, L_HIP), (R_SHOULDER, R_HIP),

@@ -133,6 +133,7 @@ def main():
     use_depth, use_privacy, show_motion = args.depth, args.privacy, False
     gt = None
     hist_angle, hist_rep, hist_speed = deque(maxlen=400), deque(maxlen=400), deque(maxlen=400)
+    hist_angle3d = deque(maxlen=400)
 
     logdir = Path(args.logdir)
     logdir.mkdir(parents=True, exist_ok=True)
@@ -166,6 +167,8 @@ def main():
 
         # --- perception
         person = pose(frame)
+        if person is not None and args.mirror:
+            person.kpts, person.conf = person.kpts[G.FLIP_LR], person.conf[G.FLIP_LR]
         display = frame.copy()
         if use_privacy:
             seg_engine = seg_engine or SegEngine(device=device)
@@ -202,6 +205,7 @@ def main():
             reps.update(angles[reps.joint])
             fall.update(pts, person.box, t)
             hist_angle.append((t, angles[gonio.joint]))
+            hist_angle3d.append((t, angles3d.get(gonio.joint, math.nan)))
             hist_rep.append((t, angles[reps.joint]))
             hist_speed.append((t, fall.speed))
 
@@ -238,7 +242,7 @@ def main():
         view = cv2.resize(display, (int(w * scale), DISPLAY_H))
         panel = ui.dashboard(DISPLAY_H, dict(
             mode_name=MODES[mode], mode_tab=ui.MODE_TABS[mode], fps=fps, thresholds=PostureAnalyzer.THRESHOLDS,
-            hist_angle=hist_angle, hist_rep=hist_rep, hist_speed=hist_speed, rep_thresholds=(reps.low, reps.high),
+            hist_angle=hist_angle, hist_angle3d=hist_angle3d, hist_rep=hist_rep, hist_speed=hist_speed, rep_thresholds=(reps.low, reps.high),
             drop_speed=fall.drop_speed, person=person is not None, filter=kf.enabled, depth=use_depth,
             privacy=use_privacy, motion=show_motion, posture_state=posture.state, view=posture.view,
             posture_metrics=posture.metrics, posture_time=posture.time_in,

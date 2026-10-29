@@ -141,3 +141,14 @@ def test_frontal_view_without_hips():
     p[[G.L_HIP, G.R_HIP, G.L_KNEE, G.R_KNEE, G.L_ANKLE, G.R_ANKLE]] = np.nan
     pa = run_posture(p)
     assert pa.view == "frontal" and pa.state == OK and "pescoco" not in pa.metrics
+
+
+def test_flip_lr_swaps_sides():
+    p = body(lateral=False)
+    p[G.R_WRIST] = p[G.R_SHOULDER] + (0, 100)
+    p[G.R_ELBOW] = p[G.R_SHOULDER] + (0, 50)
+    p[G.L_ELBOW] = p[G.L_SHOULDER] + (0, 50)
+    p[G.L_WRIST] = p[G.L_ELBOW] + (40, 0)            # left elbow bent 90 deg
+    q = p[G.FLIP_LR]
+    assert sorted(G.FLIP_LR) == list(range(17))
+    assert abs(G.joint_angle(q, "cotovelo_D") - G.joint_angle(p, "cotovelo_E")) < 1e-9

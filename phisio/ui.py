@@ -211,8 +211,9 @@ class Panel:
             mx = sx(value)
             self.d.rounded_rectangle((mx - 3, y - 5, mx + 3, y + h + 5), 3, fill=P["text"])
 
-    def spark(self, x, y, w, h, series, lines=(), color=P["accent"], lo=None, hi=None, window=10.0):
-        """Line plot of the last `window` seconds of (t, v) pairs, with optional horizontal guide lines."""
+    def spark(self, x, y, w, h, series, lines=(), color=P["accent"], lo=None, hi=None, window=10.0, extra=()):
+        """Line plot of the last `window` seconds of (t, v) pairs, with optional horizontal guide lines.
+        `extra`: more (series, color) drawn in the same box (e.g. the 3D angle next to the 2D one)."""
         self.d.rounded_rectangle((x, y, x + w, y + h), 8, fill=P["card2"])
         pts = [(t, v) for t, v in series if math.isfinite(v)]
         if not pts:
@@ -220,7 +221,8 @@ class Panel:
             return
         t1 = pts[-1][0]
         pts = [(t, v) for t, v in pts if t >= t1 - window]
-        vals = [v for _, v in pts] + [g for g, _ in lines]
+        more = [([(t, v) for t, v in ser if math.isfinite(v) and t >= t1 - window], c) for ser, c in extra]
+        vals = [v for _, v in pts] + [g for g, _ in lines] + [v for ser, _ in more for _, v in ser]
         lo = min(vals) if lo is None else lo
         hi = max(vals) if hi is None else hi
         if hi - lo < 1e-6:
@@ -231,6 +233,9 @@ class Panel:
             yy = py(g)
             for xx in range(x + 6, x + w - 6, 8):
                 self.d.line((xx, yy, xx + 4, yy), fill=c, width=1)
+        for ser, c in more:
+            if len(ser) > 1:
+                self.d.line([(px(t), py(v)) for t, v in ser], fill=c, width=2, joint="curve")
         if len(pts) > 1:
             self.d.line([(px(t), py(v)) for t, v in pts], fill=color, width=2, joint="curve")
         tx, ty = px(pts[-1][0]), py(pts[-1][1])
@@ -313,15 +318,20 @@ def _posture_card(p, y, s):
 def _angle_card(p, y, s):
     x, ty = p.card(y, 300, "ângulo articular")
     p.text((x, ty), joint_label(s["gonio_joint"]), 18, P["sub"], True)
-    p.text((x - 4, ty + 22), fmt(s["gonio_value"]), 72, P["text"], True)
-    col = p.w - 170
+    if s["depth"]:   # 2D and 3D side by side, so the difference is easy to see
+        p.text((x, ty + 30), "2D", 14, P["accent"], True)
+        p.text((x + 22, ty + 22), fmt(s["gonio_value"]), 54, P["accent"], True)
+        p.text((x + 150, ty + 30), "3D", 14, P["accent2"], True)
+        p.text((x + 172, ty + 22), fmt(s["gonio_3d"]), 54, P["accent2"], True)
+    else:
+        p.text((x - 4, ty + 22), fmt(s["gonio_value"]), 72, P["text"], True)
+    col = p.w - 170 if not s["depth"] else p.w - 120
     for i, (lab, v) in enumerate((("mín", s["gonio_min"]), ("máx", s["gonio_max"]), ("ADM", s["gonio_rom"]))):
         p.text((col, ty + 6 + 30 * i), lab, 14, P["sub"])
         p.text((p.w - 36, ty + 4 + 30 * i), fmt(v), 18, P["accent"] if lab == "ADM" else P["text"], True, anchor="ra")
-    if s["depth"]:
-        p.text((x, ty + 112), f"3D (profundidade): {fmt(s['gonio_3d'])}", 14, P["accent2"], True)
-    p.spark(x, ty + 140, p.w - x - 32, 108, s["hist_angle"], lo=0, hi=max(160, s.get("gonio_max", 0) or 0))
-    p.text((x + 8, ty + 144), "últimos 10 s", 11, P["sub"])
+    extra = ((s["hist_angle3d"], P["accent2"]),) if s["depth"] else ()
+    p.spark(x, ty + 140, p.w - x - 32, 108, s["hist_angle"], lo=0, hi=max(160, s.get("gonio_max", 0) or 0), extra=extra)
+    p.text((x + 8, ty + 144), "últimos 10 s" + (" · azul 2D, roxo 3D" if s["depth"] else ""), 11, P["sub"])
     return y + 300
 
 

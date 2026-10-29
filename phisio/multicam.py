@@ -169,6 +169,8 @@ def main():
         pts_all, conf_all, angles_all, metrics_all, views = [], [], [], [], []
         for k, frame in enumerate(frames):
             person = poses[k](frame)
+            if person is not None and args.mirror:
+                person.kpts, person.conf = person.kpts[G.FLIP_LR], person.conf[G.FLIP_LR]
             if person is None:
                 pts_all.append(None)
                 conf_all.append(None)
