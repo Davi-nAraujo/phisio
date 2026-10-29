@@ -1,0 +1,16 @@
+[project]
+name = "phisio"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "matplotlib>=3.11.2",
+    "numpy>=2.5.4",
+    "opencv-python>=5.0.0.93",
+    "pandas>=3.1.0",
+    "ultralytics>=8.4.191",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+]

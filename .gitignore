@@ -1,0 +1,7 @@
+sessions/
+testdata/
+__pycache__/
+.venv/
+models/yolo26s-pose.pt
+fotos/
+yolo26s-pose.pt
